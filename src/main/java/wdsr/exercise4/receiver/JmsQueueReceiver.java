@@ -1,8 +1,22 @@
 package wdsr.exercise4.receiver;
 
+import javax.jms.Connection;
+import javax.jms.Destination;
+import javax.jms.ExceptionListener;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import wdsr.exercise4.PriceAlert;
+import wdsr.exercise4.VolumeAlert;
 import wdsr.exercise4.sender.JmsSender;
 
 /**
@@ -13,12 +27,30 @@ import wdsr.exercise4.sender.JmsSender;
 public class JmsQueueReceiver {
 	private static final Logger log = LoggerFactory.getLogger(JmsQueueReceiver.class);
 	
+	JmsSender jmsSender = null;
+	private Connection connection = null;
+	private Session session = null;
+	private MessageConsumer consumer = null;
 	/**
 	 * Creates this object
 	 * @param queueName Name of the queue to consume messages from.
 	 */
 	public JmsQueueReceiver(final String queueName) {
-		// TODO
+		try {
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
+
+			connection = connectionFactory.createConnection();
+			connection.start();
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+			Destination destination = session.createQueue(queueName);
+
+			consumer = session.createConsumer(destination);
+			            
+			                  
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -26,14 +58,73 @@ public class JmsQueueReceiver {
 	 * @param alertService Callback to be registered.
 	 */
 	public void registerCallback(AlertService alertService) {
-		// TODO
+		try {
+			consumer.setMessageListener(new MessageListener() {
+
+				@Override
+				public void onMessage(Message message) {
+					try {
+						if(message instanceof TextMessage){
+							if(message.getJMSType().equals("PriceAlert")){
+								System.out.println("KURWA1");
+								System.out.println("!@#!@#!@#!@#: "+ ((TextMessage)message).getText());
+							} else if(message.getJMSType().equals("VolumeAlert")){
+								System.out.println("KURWA2");
+								System.out.println("!@#!@#!@#!@#: "+ ((TextMessage)message).getText());
+							}
+						}else if(message instanceof ObjectMessage){
+							if(message.getJMSType().equals("PriceAlert")){
+								System.out.println("KURWA3");
+								PriceAlert priceAlert = (PriceAlert) ((ObjectMessage)message).getObject();
+								System.out.println("!@#!@#!@#!@#: "+ priceAlert.toString());
+							} else if(message.getJMSType().equals("VolumeAlert")){
+								VolumeAlert volumeAlert = (VolumeAlert) ((ObjectMessage)message).getObject();
+								System.out.println("KURWA4");
+								System.out.println("!@#!@#!@#!@#: "+ volumeAlert.toString());
+							}
+						}
+						
+					} catch (JMSException e) {
+						e.printStackTrace();
+					}
+	
+				}
+			});
+		} catch (JMSException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 	}
 	
 	/**
 	 * Deregisters all consumers and closes the connection to JMS broker.
 	 */
 	public void shutdown() {
-		// TODO
+			try {
+				if(consumer !=null)
+					consumer.close();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+			try {
+				if(session !=null)
+					session.close();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        
+			try {
+				if(connection !=null)
+					connection.close();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 
 	// TODO

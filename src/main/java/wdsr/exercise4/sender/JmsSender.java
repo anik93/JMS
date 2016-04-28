@@ -3,15 +3,28 @@ package wdsr.exercise4.sender;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import javax.jms.Connection;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.MapMessage;
+import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import wdsr.exercise4.Order;
 
 public class JmsSender {
 	private static final Logger log = LoggerFactory.getLogger(JmsSender.class);
 	
 	private final String queueName;
 	private final String topicName;
-
+	
 	public JmsSender(final String queueName, final String topicName) {
 		this.queueName = queueName;
 		this.topicName = topicName;
@@ -24,7 +37,39 @@ public class JmsSender {
 	 * @param price Price of the product
 	 */
 	public void sendOrderToQueue(final int orderId, final String product, final BigDecimal price) {
-		// TODO
+		Connection connection = null;
+		Session session = null;
+		try{
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
+			connection = connectionFactory.createConnection();
+			connection.start();
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			Destination destination = session.createQueue(queueName);
+			MessageProducer producer = session.createProducer(destination);
+			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+			
+			ObjectMessage message = session.createObjectMessage(new Order(orderId, product, price));
+			message.setJMSType("Order");
+			message.setStringProperty("WDSR-System", "OrderProcessor");
+			producer.send(message);
+			session.close();
+	        connection.close();
+		}catch(Exception e){
+			log.error(e.toString());
+		} finally {
+			if(session !=null)
+				try {
+					session.close();
+				} catch (JMSException e) {
+					log.error(e.toString());
+				}
+			if(connection !=null)
+				try {
+					connection.close();
+				} catch (JMSException e) {
+					log.error(e.toString());
+				}
+		}
 	}
 
 	/**
@@ -32,7 +77,22 @@ public class JmsSender {
 	 * @param text String to be sent
 	 */
 	public void sendTextToQueue(String text) {
-		// TODO
+		try{
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
+			Connection connection = connectionFactory.createConnection();
+			connection.start();
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			Destination destination = session.createQueue(queueName);
+			MessageProducer producer = session.createProducer(destination);
+			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+			
+			TextMessage message = session.createTextMessage(text);
+			producer.send(message);
+			session.close();
+	        connection.close();
+		}catch(Exception e){
+			log.error(e.toString());
+		}
 	}
 
 	/**
@@ -40,6 +100,23 @@ public class JmsSender {
 	 * @param map Map of key-value pairs to be sent.
 	 */
 	public void sendMapToTopic(Map<String, String> map) {
-		// TODO
+		try{
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
+			Connection connection = connectionFactory.createConnection();
+			connection.start();
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			Destination destination = session.createTopic(topicName);
+			MessageProducer producer = session.createProducer(destination);
+			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+			
+			MapMessage message = session.createMapMessage();
+			for (Map.Entry<String, String> entry : map.entrySet())
+				message.setString(entry.getKey(), entry.getValue());
+			producer.send(message);
+			session.close();
+	        connection.close();
+		}catch(Exception e){
+			log.error(e.toString());
+		}
 	}
 }
