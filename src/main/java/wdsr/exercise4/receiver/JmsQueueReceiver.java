@@ -60,48 +60,43 @@ public class JmsQueueReceiver {
 	 */
 	public void registerCallback(AlertService alertService) {
 		try {
-			consumer.setMessageListener(new MessageListener() {
-
-				@Override
-				public void onMessage(Message message) {
-					try {
-						if(message instanceof TextMessage){
-							List<String> alert = new ArrayList<>();
-							if(message.getJMSType().equals("PriceAlert")){
-								String[] priceAlertBeta = ((TextMessage)message).getText().split("\n");
-								
-								alert.add(priceAlertBeta[0].split("=")[1]);
-								alert.add(priceAlertBeta[1].split("=")[1]);
-								alert.add(priceAlertBeta[2].split("=")[1]);
-								
-								PriceAlert priceAlert = new PriceAlert(Long.parseLong(alert.get(0)), alert.get(1), BigDecimal.valueOf(Long.parseLong(alert.get(2).replaceAll(" ", ""))));
-								alertService.processPriceAlert(priceAlert);
-							} else if(message.getJMSType().equals("VolumeAlert")){
-								String[] volumeAlertBeta = ((TextMessage)message).getText().split("\n");
-								
-								alert.add(volumeAlertBeta[0].split("=")[1]);
-								alert.add(volumeAlertBeta[1].split("=")[1]);
-								alert.add(volumeAlertBeta[2].split("=")[1]);
-								
-								VolumeAlert volumeAlert = new VolumeAlert(Long.parseLong(alert.get(0)), alert.get(1), Long.parseLong(alert.get(2).replaceAll(" ", "")));
-								alertService.processVolumeAlert(volumeAlert);
-								
-							}
-						}else if(message instanceof ObjectMessage){							
-							if(message.getJMSType().equals("PriceAlert")){								
-								PriceAlert priceAlert = (PriceAlert) ((ObjectMessage)message).getObject();
-								alertService.processPriceAlert(priceAlert);
-							} else if(message.getJMSType().equals("VolumeAlert")){
-								VolumeAlert volumeAlert = (VolumeAlert) ((ObjectMessage)message).getObject();
-								alertService.processVolumeAlert(volumeAlert);
-							}
+			consumer.setMessageListener( message -> {
+				try {
+					if(message instanceof TextMessage){
+						List<String> alert = new ArrayList<>();
+						if(message.getJMSType().equals("PriceAlert")){
+							String[] priceAlertBeta = ((TextMessage)message).getText().split("\n");
+							
+							alert.add(priceAlertBeta[0].split("=")[1]);
+							alert.add(priceAlertBeta[1].split("=")[1]);
+							alert.add(priceAlertBeta[2].split("=")[1]);
+							
+							PriceAlert priceAlert = new PriceAlert(Long.parseLong(alert.get(0)), alert.get(1), BigDecimal.valueOf(Long.parseLong(alert.get(2).replaceAll(" ", ""))));
+							alertService.processPriceAlert(priceAlert);
+						} else if(message.getJMSType().equals("VolumeAlert")){
+							String[] volumeAlertBeta = ((TextMessage)message).getText().split("\n");
+							
+							alert.add(volumeAlertBeta[0].split("=")[1]);
+							alert.add(volumeAlertBeta[1].split("=")[1]);
+							alert.add(volumeAlertBeta[2].split("=")[1]);
+							
+							VolumeAlert volumeAlert = new VolumeAlert(Long.parseLong(alert.get(0)), alert.get(1), Long.parseLong(alert.get(2).replaceAll(" ", "")));
+							alertService.processVolumeAlert(volumeAlert);
+							
 						}
-						
-					} catch (JMSException e) {
-						log.error(e.getMessage());
+					}else if(message instanceof ObjectMessage){							
+						if(message.getJMSType().equals("PriceAlert")){								
+							PriceAlert priceAlert = (PriceAlert) ((ObjectMessage)message).getObject();
+							alertService.processPriceAlert(priceAlert);
+						} else if(message.getJMSType().equals("VolumeAlert")){
+							VolumeAlert volumeAlert = (VolumeAlert) ((ObjectMessage)message).getObject();
+							alertService.processVolumeAlert(volumeAlert);
+						}
 					}
-	
-				}
+					
+				} catch (JMSException e) {
+					log.error(e.getMessage());
+				}				
 			});
 		} catch (JMSException e) {
 			log.error(e.getMessage());
@@ -114,16 +109,16 @@ public class JmsQueueReceiver {
 	 * Deregisters all consumers and closes the connection to JMS broker.
 	 */
 	public void shutdown() {
-			try {
-				if(session !=null)
-					session.close();
-				if(connection !=null)
-					connection.close();
-				if(consumer !=null)
-					consumer.close();
-			} catch (JMSException e) {
-				log.error(e.getMessage());
-			}
+		try {
+			if(session !=null)
+				session.close();
+			if(connection !=null)
+				connection.close();
+			if(consumer !=null)
+				consumer.close();
+		} catch (JMSException e) {
+			log.error(e.getMessage());
+		}
 	}
 
 	// TODO
