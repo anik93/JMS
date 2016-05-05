@@ -52,6 +52,7 @@ public class JmsSender {
 			message.setJMSType("Order");
 			message.setStringProperty("WDSR-System", "OrderProcessor");
 			producer.send(message);
+			producer.close();
 			session.close();
 	        connection.close();
 		}catch(Exception e){
@@ -77,21 +78,37 @@ public class JmsSender {
 	 * @param text String to be sent
 	 */
 	public void sendTextToQueue(String text) {
+		Connection connection = null;
+		Session session = null;
 		try{
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
-			Connection connection = connectionFactory.createConnection();
+			connection = connectionFactory.createConnection();
 			connection.start();
-			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Destination destination = session.createQueue(queueName);
 			MessageProducer producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 			
 			TextMessage message = session.createTextMessage(text);
 			producer.send(message);
+			producer.close();
 			session.close();
 	        connection.close();
 		}catch(Exception e){
 			log.error(e.toString());
+		} finally {
+			if(session !=null)
+				try {
+					session.close();
+				} catch (JMSException e) {
+					log.error(e.toString());
+				}
+			if(connection !=null)
+				try {
+					connection.close();
+				} catch (JMSException e) {
+					log.error(e.toString());
+				}
 		}
 	}
 
@@ -100,11 +117,13 @@ public class JmsSender {
 	 * @param map Map of key-value pairs to be sent.
 	 */
 	public void sendMapToTopic(Map<String, String> map) {
+		Connection connection = null;
+		Session session = null;
 		try{
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
-			Connection connection = connectionFactory.createConnection();
+			connection = connectionFactory.createConnection();
 			connection.start();
-			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Destination destination = session.createTopic(topicName);
 			MessageProducer producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -113,10 +132,24 @@ public class JmsSender {
 			for (Map.Entry<String, String> entry : map.entrySet())
 				message.setString(entry.getKey(), entry.getValue());
 			producer.send(message);
+			producer.close();
 			session.close();
 	        connection.close();
 		}catch(Exception e){
 			log.error(e.toString());
+		} finally {
+			if(session !=null)
+				try {
+					session.close();
+				} catch (JMSException e) {
+					log.error(e.toString());
+				}
+			if(connection !=null)
+				try {
+					connection.close();
+				} catch (JMSException e) {
+					log.error(e.toString());
+				}
 		}
 	}
 }

@@ -83,11 +83,9 @@ public class JmsQueueReceiver {
 						}
 					}else if(message instanceof ObjectMessage){							
 						if(message.getJMSType().equals("PriceAlert")){								
-							PriceAlert priceAlert = (PriceAlert) ((ObjectMessage)message).getObject();
-							alertService.processPriceAlert(priceAlert);
+							alertService.processPriceAlert( (PriceAlert) ((ObjectMessage)message).getObject() );
 						} else if(message.getJMSType().equals("VolumeAlert")){
-							VolumeAlert volumeAlert = (VolumeAlert) ((ObjectMessage)message).getObject();
-							alertService.processVolumeAlert(volumeAlert);
+							alertService.processVolumeAlert( (VolumeAlert) ((ObjectMessage)message).getObject() );
 						}
 					}
 					
