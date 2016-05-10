@@ -1,12 +1,13 @@
 package wdsr.exercise4;
 
-import wdsr.exercise4.sender.JmsSender;
+import wdsr.exercise4.consumer.JmsConsumer;
 
 public class Main {
 
 	public static void main(String[] args) {
-		JmsSender jmsSender = new JmsSender("anik93.QUEUE");
-		jmsSender.sendTextToQueue();
+		JmsConsumer jmsConsumer = new JmsConsumer("anik.QUEUE");
+		jmsConsumer.registerCallback();
+		jmsConsumer.getI();
 	}
 
 }
