@@ -44,10 +44,10 @@ public class JmsQueueReceiver {
 
 			Destination destination = session.createQueue(queueName);
 
-			consumer = session.createConsumer(destination);
+			consumer = session.createConsumer(destination, "JMSType='PriceAlert' OR JMSType='VolumeAlert'");
 			
 		} catch (Exception e) {
-			log.error(e.getMessage());
+			log.error("Error message ", e);
 		}
 	}
 
@@ -90,11 +90,11 @@ public class JmsQueueReceiver {
 					}
 					
 				} catch (JMSException e) {
-					log.error(e.getMessage());
+					log.error("Error message ", e);
 				}				
 			});
 		} catch (JMSException e) {
-			log.error(e.getMessage());
+			log.error("Error message ", e);
 		}
 
 
@@ -112,7 +112,7 @@ public class JmsQueueReceiver {
 			if(consumer !=null)
 				consumer.close();
 		} catch (JMSException e) {
-			log.error(e.getMessage());
+			log.error("Error message ", e);
 		}
 	}
 

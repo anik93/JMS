@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
-import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
@@ -25,9 +24,12 @@ public class JmsSender {
 	private final String queueName;
 	private final String topicName;
 	
+	private ActiveMQConnectionFactory connectionFactory = null;	
+	
 	public JmsSender(final String queueName, final String topicName) {
 		this.queueName = queueName;
 		this.topicName = topicName;
+		connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
 	}
 
 	/**
@@ -37,13 +39,10 @@ public class JmsSender {
 	 * @param price Price of the product
 	 */
 	public void sendOrderToQueue(final int orderId, final String product, final BigDecimal price) {
-		Connection connection = null;
-		Session session = null;
-		try{
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
-			connection = connectionFactory.createConnection();
+		try(Connection connection = connectionFactory.createConnection(); 
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);){
+			
 			connection.start();
-			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Destination destination = session.createQueue(queueName);
 			MessageProducer producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -56,21 +55,8 @@ public class JmsSender {
 			session.close();
 	        connection.close();
 		}catch(Exception e){
-			log.error(e.toString());
-		} finally {
-			if(session !=null)
-				try {
-					session.close();
-				} catch (JMSException e) {
-					log.error(e.toString());
-				}
-			if(connection !=null)
-				try {
-					connection.close();
-				} catch (JMSException e) {
-					log.error(e.toString());
-				}
-		}
+			log.error("Error message ", e);
+		} 
 	}
 
 	/**
@@ -78,13 +64,9 @@ public class JmsSender {
 	 * @param text String to be sent
 	 */
 	public void sendTextToQueue(String text) {
-		Connection connection = null;
-		Session session = null;
-		try{
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
-			connection = connectionFactory.createConnection();
+		try(Connection connection = connectionFactory.createConnection();
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);){
 			connection.start();
-			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Destination destination = session.createQueue(queueName);
 			MessageProducer producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -95,21 +77,8 @@ public class JmsSender {
 			session.close();
 	        connection.close();
 		}catch(Exception e){
-			log.error(e.toString());
-		} finally {
-			if(session !=null)
-				try {
-					session.close();
-				} catch (JMSException e) {
-					log.error(e.toString());
-				}
-			if(connection !=null)
-				try {
-					connection.close();
-				} catch (JMSException e) {
-					log.error(e.toString());
-				}
-		}
+			log.error("Error message ", e);
+		} 
 	}
 
 	/**
@@ -117,13 +86,9 @@ public class JmsSender {
 	 * @param map Map of key-value pairs to be sent.
 	 */
 	public void sendMapToTopic(Map<String, String> map) {
-		Connection connection = null;
-		Session session = null;
-		try{
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
-			connection = connectionFactory.createConnection();
+		try(Connection connection = connectionFactory.createConnection();
+			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);){
 			connection.start();
-			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 			Destination destination = session.createTopic(topicName);
 			MessageProducer producer = session.createProducer(destination);
 			producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -136,20 +101,7 @@ public class JmsSender {
 			session.close();
 	        connection.close();
 		}catch(Exception e){
-			log.error(e.toString());
-		} finally {
-			if(session !=null)
-				try {
-					session.close();
-				} catch (JMSException e) {
-					log.error(e.toString());
-				}
-			if(connection !=null)
-				try {
-					connection.close();
-				} catch (JMSException e) {
-					log.error(e.toString());
-				}
+			log.error("Error message ", e);
 		}
 	}
 }
