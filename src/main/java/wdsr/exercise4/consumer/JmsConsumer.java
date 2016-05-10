@@ -57,7 +57,7 @@ public class JmsConsumer {
 		} catch (JMSException e) {
 			log.error("Error message ", e);
 		}
-		getI();
+		log.info("licznik "+i);
 	}
 	
 	public void shutdown() {
