@@ -13,20 +13,7 @@ ext {
 	log4jVersion = '2.5'
     junitVersion = '4.12'
 	
-	libraries = [
-        spring: [
-                  "org.springframework:spring-core:${springVersion}",
-                  "org.springframework:spring-tx:${springVersion}",
-                  "org.springframework:spring-jms:${springVersion}",
-                  "org.springframework:spring-aop:${springVersion}",
-        ],
-
-        activemqCore: [
-                "org.apache.activemq:activemq-broker:${activemqVersion}",
-                "org.apache.activemq:activemq-kahadb-store:${activemqVersion}",
-                "org.apache.activemq:activemq-spring:${activemqVersion}",
-        ],
-		
+	libraries = [		
         log4j: [
                 "org.apache.logging.log4j:log4j-api:${log4jVersion}",
                 "org.apache.logging.log4j:log4j-core:${log4jVersion}",
@@ -38,7 +25,6 @@ ext {
 dependencies {
     compile "javax:javaee-api:7.0"
     compile "org.apache.activemq:activemq-spring:5.13.2"
-    compile libraries.spring
     compile libraries.log4j
 }
 
