@@ -46,9 +46,11 @@ public class JmsConsumer {
 			consumer.setMessageListener( message -> {
 				
 				if(message instanceof TextMessage){
-					i++;
+					
 					try {
+						i++;
 						log.info(((TextMessage) message).getText());
+						log.info("licznik "+i);
 					} catch (Exception e) {
 						log.error("Error message ", e);
 					}
@@ -57,7 +59,7 @@ public class JmsConsumer {
 		} catch (JMSException e) {
 			log.error("Error message ", e);
 		}
-		log.info("licznik "+i);
+		
 	}
 	
 	public void shutdown() {
