@@ -5,9 +5,9 @@ import wdsr.exercise4.consumer.JmsConsumer;
 public class Main {
 
 	public static void main(String[] args) {
-		JmsConsumer jmsConsumer = new JmsConsumer("anik.QUEUE");
+		JmsConsumer jmsConsumer = new JmsConsumer("anik93.QUEUE");
 		jmsConsumer.registerCallback();
-		jmsConsumer.getI();
+		//jmsConsumer.getI();
 	}
 
 }

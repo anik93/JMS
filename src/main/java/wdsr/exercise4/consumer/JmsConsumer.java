@@ -21,7 +21,7 @@ public class JmsConsumer {
 	
 	public JmsConsumer(final String queueName) {
 		try {
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
+			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 			connectionFactory.setTrustAllPackages(true);
 			connection = connectionFactory.createConnection();
 			connection.start();
@@ -57,6 +57,7 @@ public class JmsConsumer {
 		} catch (JMSException e) {
 			log.error("Error message ", e);
 		}
+		getI();
 	}
 	
 	public void shutdown() {
