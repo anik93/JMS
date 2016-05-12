@@ -8,6 +8,7 @@ import javax.jms.MessageListener;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
+import javax.jms.TopicSubscriber;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public class JmsSubscriber {
 	private Connection connection = null;
 	private Session session = null;
 	private MessageConsumer consumer = null;
+	private TopicSubscriber topicSubscriber = null;
 	
 	public JmsSubscriber(final String topicName) {
 		try {
@@ -32,14 +34,30 @@ public class JmsSubscriber {
 			Topic topic = session.createTopic(topicName);
 
 			//consumer = session.createConsumer(topic);
-			consumer = session.createDurableSubscriber(topic, "sub");
+			//consumer = session.createDurableSubscriber(topic, "sub");
+			topicSubscriber = session.createDurableSubscriber(topic, "sub");
 		} catch (Exception e) {
 			log.error("Error message ", e);
 		}
 	}
 	
 	public void getMessage() {
-		MessageListener listner = new MessageListener() {
+		try {
+			topicSubscriber.setMessageListener( message -> {
+				
+				if(message instanceof TextMessage){
+					
+					try {
+						log.info(((TextMessage) message).getText());
+					} catch (Exception e) {
+						log.error("Error message ", e);
+					}
+				}				
+			});
+		} catch (JMSException e) {
+			log.error("Error message ", e);
+		}
+		/*MessageListener listner = new MessageListener() {
             public void onMessage(Message message) {
                 try {
                     if (message instanceof TextMessage) {
@@ -55,6 +73,6 @@ public class JmsSubscriber {
 			consumer.setMessageListener(listner);
 		} catch (JMSException e) {
 			log.error("error ",e);
-		}
+		}*/
 	}
 }
