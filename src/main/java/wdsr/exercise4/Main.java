@@ -1,12 +1,12 @@
 package wdsr.exercise4;
 
-import wdsr.exercise4.publisher.JmsPublisher;
+import wdsr.exercise4.subscriber.JmsSubscriber;
 
 public class Main {
 
 	public static void main(String[] args) {
-		JmsPublisher jmsPublisher = new JmsPublisher("anik93.TOPIC");
-		jmsPublisher.sendTopic();
+		JmsSubscriber jmsSubscriber = new JmsSubscriber("anik93.TOPIC");
+		jmsSubscriber.getMessage();
 	}
 
 }
