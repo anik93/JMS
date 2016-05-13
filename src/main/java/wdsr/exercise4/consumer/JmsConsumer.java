@@ -17,7 +17,7 @@ public class JmsConsumer {
 	private Connection connection = null;
 	private Session session = null;
 	private MessageConsumer consumer = null;
-	int i = 0;
+	private int i = 0;
 	
 	public JmsConsumer(final String queueName) {
 		try {
