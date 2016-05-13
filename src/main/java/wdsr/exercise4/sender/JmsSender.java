@@ -38,7 +38,7 @@ public class JmsSender {
 				producer.send(message);
 			}
 			long end = System.currentTimeMillis()-start;
-			log.info("10000 persistent messages sent in {} milliseconds.",end);
+			log.info("10000 non-persistent messages sent in {} milliseconds.",end);
 			
 			producer.setDeliveryMode(DeliveryMode.PERSISTENT);
 			start = System.currentTimeMillis();
@@ -47,7 +47,7 @@ public class JmsSender {
 				producer.send(message);
 			}
 			end = System.currentTimeMillis()-start;
-			log.info("10000 non-persistent messages sent in {} milliseconds.",end);
+			log.info("10000 persistent messages sent in {} milliseconds.",end);
 		}catch(Exception e){
 			log.error("Error message ", e);
 		} 
