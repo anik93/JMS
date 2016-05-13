@@ -21,6 +21,7 @@ public class JmsSubscriber {
 	private Session session = null;
 	private MessageConsumer consumer = null;
 	private TopicSubscriber topicSubscriber = null;
+	private int i = 0;
 	
 	public JmsSubscriber(final String topicName) {
 		try {
@@ -48,7 +49,8 @@ public class JmsSubscriber {
 				if(message instanceof TextMessage){
 					
 					try {
-						log.info(((TextMessage) message).getText());
+						i++;
+						log.info("No. {} Message {}", i, ((TextMessage) message).getText());
 					} catch (Exception e) {
 						log.error("Error message ", e);
 					}
