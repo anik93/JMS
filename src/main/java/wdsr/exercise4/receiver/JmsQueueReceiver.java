@@ -30,25 +30,16 @@ public class JmsQueueReceiver {
 	private Connection connection = null;
 	private Session session = null;
 	private MessageConsumer consumer = null;
+	private String queueName = null;
+	private ActiveMQConnectionFactory connectionFactory = null;
 	/**
 	 * Creates this object
 	 * @param queueName Name of the queue to consume messages from.
 	 */
 	public JmsQueueReceiver(final String queueName) {
-		try {
-			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
-			connectionFactory.setTrustAllPackages(true);
-			connection = connectionFactory.createConnection();
-			connection.start();
-			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-			Destination destination = session.createQueue(queueName);
-
-			consumer = session.createConsumer(destination, "JMSType='PriceAlert' OR JMSType='VolumeAlert'");
-			
-		} catch (Exception e) {
-			log.error("Error message ", e);
-		}
+		this.queueName=queueName;
+		connectionFactory = new ActiveMQConnectionFactory("vm://localhost");
+		connectionFactory.setTrustAllPackages(true);
 	}
 
 	/**
@@ -57,6 +48,15 @@ public class JmsQueueReceiver {
 	 */
 	public void registerCallback(AlertService alertService) {
 		try {
+			connection = connectionFactory.createConnection();
+			
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+			Destination destination = session.createQueue(this.queueName);
+
+			consumer = session.createConsumer(destination, "JMSType='PriceAlert' OR JMSType='VolumeAlert'");
+
+			connection.start();
 			consumer.setMessageListener( message -> {
 				try {
 					if(message instanceof TextMessage){

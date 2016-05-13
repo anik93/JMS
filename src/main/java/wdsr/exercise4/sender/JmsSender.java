@@ -52,8 +52,6 @@ public class JmsSender {
 			message.setStringProperty("WDSR-System", "OrderProcessor");
 			producer.send(message);
 			producer.close();
-			session.close();
-	        connection.close();
 		}catch(Exception e){
 			log.error("Error message ", e);
 		} 
@@ -66,6 +64,7 @@ public class JmsSender {
 	public void sendTextToQueue(String text) {
 		try(Connection connection = connectionFactory.createConnection();
 			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);){
+			
 			connection.start();
 			Destination destination = session.createQueue(queueName);
 			MessageProducer producer = session.createProducer(destination);
@@ -74,8 +73,6 @@ public class JmsSender {
 			TextMessage message = session.createTextMessage(text);
 			producer.send(message);
 			producer.close();
-			session.close();
-	        connection.close();
 		}catch(Exception e){
 			log.error("Error message ", e);
 		} 
@@ -88,6 +85,7 @@ public class JmsSender {
 	public void sendMapToTopic(Map<String, String> map) {
 		try(Connection connection = connectionFactory.createConnection();
 			Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);){
+			
 			connection.start();
 			Destination destination = session.createTopic(topicName);
 			MessageProducer producer = session.createProducer(destination);
@@ -98,8 +96,6 @@ public class JmsSender {
 				message.setString(entry.getKey(), entry.getValue());
 			producer.send(message);
 			producer.close();
-			session.close();
-	        connection.close();
 		}catch(Exception e){
 			log.error("Error message ", e);
 		}
