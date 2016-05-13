@@ -2,9 +2,6 @@ package wdsr.exercise4.publisher;
 
 import javax.jms.Connection;
 import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import javax.jms.TextMessage;
@@ -23,8 +20,6 @@ public class JmsPublisher {
 	public JmsPublisher(final String topicName) {
 		this.topicName = topicName;
 		connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
-			
-
 	}
 	
 	public void sendTopic() {
