@@ -45,7 +45,7 @@ public class JmsConsumer {
 					
 					try {
 						i++;
-						log.info("No."+ i +"Message"+ ((TextMessage) message).getText());
+						log.info("No. {} Message {}", i, ((TextMessage) message).getText());
 					} catch (Exception e) {
 						log.error("Error message ", e);
 					}
