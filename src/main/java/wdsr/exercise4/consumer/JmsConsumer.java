@@ -35,11 +35,7 @@ public class JmsConsumer {
 			log.error("Error message ", e);
 		}
 	}
-	
-	public void getI(){
-		log.info("{}",i);
-	}
-	
+
 	public void registerCallback() {
 		
 		try {
@@ -49,8 +45,7 @@ public class JmsConsumer {
 					
 					try {
 						i++;
-						log.info(((TextMessage) message).getText());
-						log.info("licznik "+i);
+						log.info("No."+ i +"Message"+ ((TextMessage) message).getText());
 					} catch (Exception e) {
 						log.error("Error message ", e);
 					}
