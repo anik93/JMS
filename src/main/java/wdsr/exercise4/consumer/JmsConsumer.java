@@ -24,7 +24,7 @@ public class JmsConsumer {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 			connectionFactory.setTrustAllPackages(true);
 			connection = connectionFactory.createConnection();
-			connection.start();
+			
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 			Destination destination = session.createQueue(queueName);
@@ -32,7 +32,7 @@ public class JmsConsumer {
 			consumer = session.createConsumer(destination);
 			
 		} catch (Exception e) {
-			log.error("Error message ", e);
+			log.error("Error when create connection ", e);
 		}
 	}
 
@@ -51,8 +51,9 @@ public class JmsConsumer {
 					}
 				}				
 			});
+			connection.start();
 		} catch (JMSException e) {
-			log.error("Error message ", e);
+			log.error("Error when start connection and set listener ", e);
 		}
 		
 	}
@@ -66,7 +67,7 @@ public class JmsConsumer {
 			if(consumer !=null)
 				consumer.close();
 		} catch (JMSException e) {
-			log.error("Error message ", e);
+			log.error("Error when close session ", e);
 		}
 	}
 }
