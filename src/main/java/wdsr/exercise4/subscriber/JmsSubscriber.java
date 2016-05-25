@@ -24,14 +24,14 @@ public class JmsSubscriber {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 			connection = connectionFactory.createConnection();
 			connection.setClientID("1");
-			connection.start();
+			
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 			Topic topic = session.createTopic(topicName);
 
 			topicSubscriber = session.createDurableSubscriber(topic, "sub");
 		} catch (Exception e) {
-			log.error("Error message ", e);
+			log.error("Error when creating connection ", e);
 		}
 	}
 	
@@ -45,12 +45,13 @@ public class JmsSubscriber {
 						i++;
 						log.info("No. {} Message {}", i, ((TextMessage) message).getText());
 					} catch (Exception e) {
-						log.error("Error message ", e);
+						log.error("Error when get message ", e);
 					}
 				}				
 			});
+			connection.start();
 		} catch (JMSException e) {
-			log.error("Error message ", e);
+			log.error("Error when start connection and set listener ", e);
 		}
 	}
 }
