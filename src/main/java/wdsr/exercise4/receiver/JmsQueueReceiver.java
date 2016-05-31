@@ -77,7 +77,7 @@ public class JmsQueueReceiver {
 							alertService.processPriceAlert( (PriceAlert) ((ObjectMessage)message).getObject() );
 
 				} catch (JMSException e) {
-					log.error("Error message ", e);
+					log.error("Error when get message 'PriceAlert' ", e);
 				}				
 			});
 			
@@ -102,12 +102,12 @@ public class JmsQueueReceiver {
 						}
 					}
 				}catch(JMSException e){
-					log.error("Error message ", e);
+					log.error("Error when get message 'VolumeAlert' ", e);
 				}
 			});
 			
 		} catch (JMSException e) {
-			log.error("Error message ", e);
+			log.error("Error when get message ", e);
 		}
 	}
 	
@@ -125,7 +125,7 @@ public class JmsQueueReceiver {
 			if(consumerVolume !=null)
 				consumerVolume.close();
 		} catch (JMSException e) {
-			log.error("Error message ", e);
+			log.error("Error when close message ", e);
 		}
 	}
 

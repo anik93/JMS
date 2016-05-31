@@ -53,7 +53,7 @@ public class JmsSender {
 			producer.send(message);
 			producer.close();
 		}catch(Exception e){
-			log.error("Error message ", e);
+			log.error("Error when send object message to Queue ", e);
 		} 
 	}
 
@@ -74,7 +74,7 @@ public class JmsSender {
 			producer.send(message);
 			producer.close();
 		}catch(Exception e){
-			log.error("Error message ", e);
+			log.error("Error when send text message to Queue ", e);
 		} 
 	}
 
@@ -97,7 +97,7 @@ public class JmsSender {
 			producer.send(message);
 			producer.close();
 		}catch(Exception e){
-			log.error("Error message ", e);
+			log.error("Error when send map message to Queue ", e);
 		}
 	}
 }
